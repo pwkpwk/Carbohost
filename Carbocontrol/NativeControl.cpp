@@ -4,6 +4,7 @@
 #include "NativeControl.h"
 #include "NativeWindow.h"
 #include "ChildWindow.h"
+#include "dllmain.h"
 
 using namespace Carbocontrol;
 
@@ -16,7 +17,7 @@ namespace
 		HWND m_child;
 
 	public:
-		ScrollerWindow() noexcept : m_child(NULL)
+		ScrollerWindow() noexcept : NativeWindow(&m_windowClass), m_child(NULL)
 		{
 		}
 
@@ -26,8 +27,9 @@ namespace
 
 		HWND Create(HWND parent) noexcept
 		{
-			const RECT rect = { 0, 0, 200, 200 };
-			return __super::CreateHWND(&m_windowClass, ::GetModuleHandle(NULL), parent, WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE, &rect);
+			RECT rect;
+			::GetClientRect(parent, &rect);
+			return __super::CreateHWND(LibraryModule::Module()->GetInstanceHandle(), parent, WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE, &rect);
 		}
 
 	protected:
@@ -213,7 +215,7 @@ namespace
 				position = -rectChild.top - 1;
 				if (position >= 0)
 				{
-					::SetWindowPos(m_child, NULL, rectChild.left, -position, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+					::SetWindowPos(m_child, NULL, rectChild.left, -position, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
 					::SetScrollPos(hwnd, SB_VERT, position, FALSE);
 				}
 				break;
@@ -222,18 +224,18 @@ namespace
 				position = -rectChild.top + 1;
 				if (position <= (rectChild.bottom - rectChild.top) - size.cy)
 				{
-					::SetWindowPos(m_child, NULL, rectChild.left, -position, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+					::SetWindowPos(m_child, NULL, rectChild.left, -position, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
 					::SetScrollPos(hwnd, SB_VERT, position, FALSE);
 				}
 				break;
 
 			case SB_THUMBTRACK:
-				::SetWindowPos(m_child, NULL, rectChild.left, -position, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+				::SetWindowPos(m_child, NULL, rectChild.left, -position, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
 				::SetScrollPos(hwnd, SB_VERT, position, FALSE);
 				break;
 
 			case SB_THUMBPOSITION:
-				::SetWindowPos(m_child, NULL, rectChild.left, -position, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+				::SetWindowPos(m_child, NULL, rectChild.left, -position, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
 				::SetScrollPos(hwnd, SB_VERT, position, TRUE);
 				break;
 			}
@@ -258,7 +260,7 @@ namespace
 				position = -rectChild.left - 1;
 				if (position >= 0)
 				{
-					::SetWindowPos(m_child, NULL, -position, rectChild.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+					::SetWindowPos(m_child, NULL, -position, rectChild.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
 					::SetScrollPos(hwnd, SB_HORZ, position, FALSE);
 				}
 				break;
@@ -267,18 +269,18 @@ namespace
 				position = -rectChild.left + 1;
 				if (position <= (rectChild.right - rectChild.left) - size.cx)
 				{
-					::SetWindowPos(m_child, NULL, -position, rectChild.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+					::SetWindowPos(m_child, NULL, -position, rectChild.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
 					::SetScrollPos(hwnd, SB_HORZ, position, FALSE);
 				}
 				break;
 
 			case SB_THUMBTRACK:
-				::SetWindowPos(m_child, NULL, -position, rectChild.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+				::SetWindowPos(m_child, NULL, -position, rectChild.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
 				::SetScrollPos(hwnd, SB_HORZ, position, FALSE);
 				break;
 
 			case SB_THUMBPOSITION:
-				::SetWindowPos(m_child, NULL, -position, rectChild.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+				::SetWindowPos(m_child, NULL, -position, rectChild.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
 				::SetScrollPos(hwnd, SB_HORZ, position, TRUE);
 				break;
 			}

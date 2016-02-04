@@ -17,6 +17,7 @@ public:
 
 	~NativeWindowClass() noexcept {}
 
+	_Check_return_
 	LPCTSTR Register(_In_ HINSTANCE instance, _In_ WNDPROC wndProc) noexcept
 	{
 		WNDCLASSEX	classex = { 0 };
@@ -58,11 +59,15 @@ public:
 class NativeWindow abstract
 {
 private:
-	NativeWindowClass *m_windowClass;
+	//
+	// Pointer to a static window class object shared by all instances of the particular window class.
+	// Each window class defines its own window class object.
+	//
+	NativeWindowClass * const m_windowClass;
 
 protected:
-	NativeWindow() noexcept
-	:	m_windowClass(nullptr)
+	NativeWindow(_In_ NativeWindowClass *windowClass) noexcept
+	:	m_windowClass(windowClass)
 	{
 	}
 
@@ -70,16 +75,18 @@ protected:
 	{
 	}
 
-	HWND CreateHWND(_In_ NativeWindowClass *windowClass, HINSTANCE instance, HWND parent, DWORD style, _In_ LPCRECT rect) noexcept
+	_Check_return_
+	HWND CreateHWND(_In_ HINSTANCE instance, _In_ HWND parent, DWORD style, _In_ LPCRECT rect) noexcept
 	{
-		_ASSERTE(!m_windowClass);
+		_ASSERTE(m_windowClass);
+		_ASSERTE(NULL != instance);
+		_ASSERTE(::IsWindow(parent));
 
 		HWND	hwnd = NULL;
-		LPCTSTR	registeredClassName = windowClass->Register(instance, WindowProcStub);
+		LPCTSTR	registeredClassName = m_windowClass->Register(instance, WindowProcStub);
 
 		if (registeredClassName)
 		{
-			m_windowClass = windowClass;
 			hwnd = ::CreateWindowEx(0, registeredClassName, NULL, style,
 				rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top,
 				parent, NULL, instance, this);
@@ -124,6 +131,7 @@ private:
 		return lrc;
 	}
 
+	_Check_return_
 	static LRESULT OnNonClientCreate(HWND hwnd, LPCREATESTRUCT lpcs) noexcept
 	{
 		::SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(lpcs->lpCreateParams));

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NativeWindow.h"
+#include "dllmain.h"
 
 class ChildWindow sealed : public NativeWindow
 {
@@ -15,15 +16,15 @@ public:
 
 		if (window)
 		{
-			const RECT rect = { 0, 0, 600, 400 };
-			hwnd = window->CreateHWND(&m_windowClass, ::GetModuleHandle(NULL), parent, WS_CHILD | WS_VISIBLE, &rect);
+			const RECT rect = { 0, 0, 800, 600 };
+			hwnd = window->CreateHWND(LibraryModule::Module()->GetInstanceHandle(), parent, WS_CHILD | WS_VISIBLE | WS_BORDER, &rect);
 		}
 
 		return hwnd;
 	}
 
 private:
-	ChildWindow() noexcept
+	ChildWindow() noexcept : NativeWindow(&m_windowClass)
 	{
 	}
 
@@ -61,7 +62,7 @@ private:
 
 		if (hdc)
 		{
-			COLORREF	bkOld = ::SetBkColor(hdc, RGB(15, 127, 15));
+			COLORREF	bkOld = ::SetBkColor(hdc, RGB(255, 127, 255));
 			RECT		rcClient;
 
 			::GetClientRect(hwnd, &rcClient);
