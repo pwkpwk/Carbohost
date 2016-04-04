@@ -1,7 +1,6 @@
 ﻿namespace Carbohost
 {
     using Carbocontrol;
-    using System;
     using System.Windows;
 
     /// <summary>
@@ -20,14 +19,8 @@
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            this.Loaded -= this.OnLoaded;
             this.NativeHost.Child = _nativeControl;
-            _nativeControl.MessageHook += NativeMessageFilter;
-        }
-
-        private IntPtr NativeMessageFilter(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            handled = false;
-            return IntPtr.Zero;
         }
     }
 }

@@ -16,7 +16,7 @@ public:
 
 		if (window)
 		{
-			const RECT rect = { 0, 0, 800, 600 };
+			const RECT rect = { 0, 0, 480, 160 };
 			hwnd = window->CreateHWND(LibraryModule::Module()->GetInstanceHandle(), parent, WS_CHILD | WS_VISIBLE | WS_BORDER, &rect);
 		}
 

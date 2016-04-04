@@ -20,17 +20,21 @@ public:
 	_Check_return_
 	LPCTSTR Register(_In_ HINSTANCE instance, _In_ WNDPROC wndProc) noexcept
 	{
-		WNDCLASSEX	classex = { 0 };
-		TCHAR		className[64];
+		if (0 == m_classAtom)
+		{
+			WNDCLASSEX	classex = { 0 };
+			TCHAR		className[64];
 
-		StringCchPrintf(className, _ARRAYSIZE(className), TEXT("Window-%p"), this);
-		classex.cbSize = sizeof(classex);
-		classex.hInstance = instance;
-		classex.hCursor = ::LoadCursor(NULL, IDC_HAND);
-		classex.lpszClassName = className;
-		classex.lpfnWndProc = wndProc;
+			StringCchPrintf(className, _ARRAYSIZE(className), TEXT("Window-%p"), this);
+			classex.cbSize = sizeof(classex);
+			classex.hInstance = instance;
+			classex.hCursor = ::LoadCursor(NULL, IDC_HAND);
+			classex.lpszClassName = className;
+			classex.lpfnWndProc = wndProc;
 
-		m_classAtom = ::RegisterClassEx(&classex);
+			m_classAtom = ::RegisterClassEx(&classex);
+		}
+
 		if (0 != m_classAtom)
 		{
 			m_instance = instance;

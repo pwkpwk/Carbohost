@@ -4,10 +4,49 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Carbohost"
-        xmlns:native="Carbocontrol"
+        xmlns:native="clr-namespace:Carbocontrol;assembly=Carbocontrol"
         mc:Ignorable="d"
+        SnapsToDevicePixels="True"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        <Border x:Name="NativeHost" />
+
+    <Window.DataContext>
+        <local:MainWindowViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+    </Window.Resources>
+    
+    <Grid Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0">
+            <StackPanel Orientation="Horizontal">
+                <CheckBox x:Name="CheckBox" Margin="5" VerticalAlignment="Center" 
+                          IsChecked="{Binding IsOtherPanelVisible, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBlock Text="Show the other panel"/>
+                </CheckBox>
+                <Button Margin="5" Command="{Binding ShowFloater}" VerticalAlignment="Center">
+                    <TextBlock Text="Show Floater"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Border Grid.Column="0" x:Name="NativeHost" />
+            <Border Grid.Column="1" Visibility="{Binding IsOtherPanelVisible, Converter={StaticResource BoolToVisibility}}">
+                <Border.Child>
+                    <native:NativeControl />
+                </Border.Child>
+            </Border>
+        </Grid>
     </Grid>
 </Window>
